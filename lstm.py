@@ -36,7 +36,7 @@ class LSTMCell(RNNCell):
             W_both = tf.concat(0, [W_xh, W_hh])
             hidden = tf.matmul(concat, W_both) + bias
 
-            i, j, f, o = tf.split(1, 4, hidden)
+            i, j, f, o = tf.split(hidden, 4, 1)
 
             new_c = c * tf.sigmoid(f) + tf.sigmoid(i) * tf.tanh(j)
             new_h = tf.tanh(new_c) * tf.sigmoid(o)
@@ -78,7 +78,7 @@ class BNLSTMCell(RNNCell):
 
             hidden = bn_xh + bn_hh + bias
 
-            i, j, f, o = tf.split(1, 4, hidden)
+            i, j, f, o = tf.split(hidden, 4, 1)
 
             new_c = c * tf.sigmoid(f) + tf.sigmoid(i) * tf.tanh(j)
             bn_new_c = batch_norm(new_c, 'c', self.training)

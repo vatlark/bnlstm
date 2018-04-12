@@ -45,18 +45,18 @@ correct_prediction = tf.equal(tf.argmax(y,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 # Summaries
-tf.scalar_summary("accuracy", accuracy)
-tf.scalar_summary("xe_loss", cross_entropy)
+tf.summary.scalar("accuracy", accuracy)
+tf.summary.scalar("xe_loss", cross_entropy)
 for (grad, var), (capped_grad, _) in zip(gvs, capped_gvs):
     if grad is not None:
-        tf.histogram_summary('grad/{}'.format(var.name), capped_grad)
-        tf.histogram_summary('capped_fraction/{}'.format(var.name),
+        tf.summary.histogram('grad/{}'.format(var.name), capped_grad)
+        tf.summary.histogram('capped_fraction/{}'.format(var.name),
             tf.nn.zero_fraction(grad - capped_grad))
-        tf.histogram_summary('weight/{}'.format(var.name), var)
+        tf.summary.histogram('weight/{}'.format(var.name), var)
 
-merged = tf.merge_all_summaries()
+merged = tf.summary.merge_all()
 
-init = tf.initialize_all_variables()
+init = tf.global_variables_initializer()
 
 sess = tf.Session()
 sess.run(init)
@@ -64,7 +64,7 @@ sess.run(init)
 logdir = 'logs/' + str(uuid.uuid4())
 os.makedirs(logdir)
 print('logging to ' + logdir)
-writer = tf.train.SummaryWriter(logdir, sess.graph)
+writer = tf.summary.FileWriter(logdir, sess.graph)
 
 current_time = time.time()
 print("Using population statistics (training: False) at test time gives worse results than batch statistics")
